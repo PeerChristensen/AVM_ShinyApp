@@ -88,49 +88,51 @@ server <- function(input, output) {
     
     df <- df %>% filter(Kommune == input$muni)
     
-    if (input$colour == "Købsår") {
-      
-    ggplot(data = df, aes_string(x = input$x, y = input$y, colour = input$colour)) +
+    p <- ggplot(data = df, aes_string(x = input$x, y = input$y, colour = input$colour)) +
       geom_point(alpha = input$alpha, size = 3) +
       theme_minimal() +
       theme(plot.title = element_text(size=24),
             axis.title = element_text(size=18),
             axis.text = element_text(size=16)) +
       ggtitle(input$muni) +
-        scale_colour_gradient2_tableau() +
-        guides(colour = guide_legend(override.aes = list(alpha=1))) +
-        scale_y_continuous(labels = function(n) {
-          trans = n / 1000
-          paste0(trans, "K")
-        }) +
-        scale_x_continuous(labels = function(n) {
-          trans = n / 1000
-          paste0(trans, "K")
-        }) 
+        guides(colour = guide_legend(override.aes = list(alpha=1)))
+    
+    if (input$colour == "Købsår") {
+      p <- p + scale_colour_gradient2_tableau()
+    
+    } else {
+      p <- p + scale_colour_tableau()
     }
     
-    
-    else {
-      ggplot(data = df, aes_string(x = input$x, y = input$y, colour = input$colour)) +
-        geom_point(alpha = input$alpha, size = 3) +
-        theme_minimal() +
-        theme(plot.title = element_text(size=24),
-              axis.title = element_text(size=18),
-              axis.text = element_text(size=16)) +
-        ggtitle(input$muni) +
-        scale_colour_tableau() +
-        guides(colour = guide_legend(override.aes = list(alpha=1))) +
-        scale_y_continuous(labels = function(n) {
-          trans = n / 1000
-          paste0(trans, "K")
-        }) +
-        scale_x_continuous(labels = function(n) {
-          trans = n / 1000
-          paste0(trans, "K")
-        }) 
+    if (input$x == "Vurderingspris_kvm") {
+      p <- p + scale_x_continuous(labels = function(n) {
+        trans = n / 1000
+        paste0(trans, " K")
+      })
+      
+    } else {
+      p <- p + scale_x_continuous(labels = function(n) {
+         trans = n / 1000000
+         paste0(trans, " M")
+       })
     }
+    
+    if (input$y == "Vurderingspris_kvm") {
+      p + scale_y_continuous(labels = function(n) {
+        trans = n / 1000
+        paste0(trans, " K")
+      })
+      
+    } else {
+      p + scale_y_continuous(labels = function(n) {
+        trans = n / 1000000
+        paste0(trans, " M")
+      })
+    }
+    
   })
   
+
   output$corr <- renderText({
     
     df <- df %>% filter(Kommune == input$muni)
