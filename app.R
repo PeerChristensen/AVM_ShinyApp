@@ -6,10 +6,10 @@ library(shiny)
 library(ggthemes)
 
 df  <- read_csv("avm_all_5.csv")
-df <- df %>% rename(Købspris = PROP_PURPRICE,
+df <- df %>% rename(Handelspris = PROP_PURPRICE,
               Vurderingspris_kvm = PROP_VALUASQM_AVM,
               Vurderingspris = PROP_VALUATION_AVM,
-              Købsår = Year,
+              Handelsår = Year,
               Kommune = MUNI_NAME) %>%
               mutate(Kommune = factor(Kommune))
 
@@ -38,18 +38,18 @@ ui <- fluidPage(
       
       selectInput(inputId = "x",
                   label   = "X:",
-                  choices = c("Købspris","Vurderingspris_kvm","Vurderingspris"),
-                  selected = "Købspris"),
+                  choices = c("Handelspris","Vurderingspris_kvm","Vurderingspris"),
+                  selected = "Handelspris"),
       
       selectInput(inputId = "y",
                   label   = "Y:",
-                  choices = c("Købspris","Vurderingspris_kvm","Vurderingspris"),
+                  choices = c("Handelspris","Vurderingspris_kvm","Vurderingspris"),
                   selected = "Vurderingspris"),
       
       selectInput(inputId = "colour",
                   label   = "Farv efter:",
-                  choices = c("Købsår","Type"),
-                  selected = "Købsår"),
+                  choices = c("Handelsår","Type"),
+                  selected = "Handelsår"),
       
       sliderInput(inputId = "alpha",
                   label   = "Alpha:",
@@ -72,10 +72,10 @@ server <- function(input, output) {
   output$scatterplot <- renderPlot({
     
     df  <- read_csv("avm_all_5.csv")
-    df <- df %>% rename(Købspris = PROP_PURPRICE,
+    df <- df %>% rename(Handelspris = PROP_PURPRICE,
                         Vurderingspris_kvm = PROP_VALUASQM_AVM,
                         Vurderingspris = PROP_VALUATION_AVM,
-                        Købsår = Year,
+                        Handelsår = Year,
                         Kommune = MUNI_NAME)  %>%
                         mutate(Kommune = factor(Kommune))
     
@@ -97,7 +97,7 @@ server <- function(input, output) {
       ggtitle(input$muni) +
         guides(colour = guide_legend(override.aes = list(alpha=1)))
     
-    if (input$colour == "Købsår") {
+    if (input$colour == "Handelsår") {
       p <- p + scale_colour_gradient2_tableau()
     
     } else {
